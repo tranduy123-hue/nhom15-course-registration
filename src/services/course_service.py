@@ -147,3 +147,118 @@ def get_section_detail(db: Any, section_id: int) -> Optional[dict[str, Any]]:
     finally:
         if should_close:
             conn.close()
+def create_section(
+    db: Any,
+    course_id: int,
+    section_code: str,
+    max_capacity: int,
+    day: str,
+    start: int,
+    end: int,
+    room: str,
+    lecturer: str,
+    semester: str = "2026-1",
+) -> dict[str, Any]:
+    """
+    Mở một lớp học phần mới ('OPEN') với thông tin giảng viên, phòng học, lịch học và sĩ số tối đa.
+    """
+    if max_capacity <= 0:
+        raise ValueError("Sĩ số tối đa (max_capacity) phải lớn hơn 0.")
+    if start <= 0 or end < start:
+        raise ValueError("Tiết bắt đầu và tiết kết thúc không hợp lệ.")
+
+    schedule_str = f"{day.strip()} (Tiết {start}-{end})"
+    clean_code = section_code.strip()
+    clean_room = room.strip()
+    clean_lecturer = lecturer.strip()
+    clean_semester = semester.strip()
+
+    conn, should_close = _get_conn(db)
+    try:
+        # Kiểm tra môn học có tồn tại không
+        course_row = conn.execute(
+            "SELECT id FROM courses WHERE id = ?", (course_id,)
+        ).fetchone()
+        if course_row is None:
+            raise ValueError(f"Không tìm thấy môn học với course_id={course_id}.")
+
+        cursor = conn.execute(
+            """
+            INSERT INTO class_sections (
+                section_code,
+                course_id,
+                semester,
+                lecturer,
+                schedule,
+                room,
+                max_capacity,
+                enrolled_count,
+                status
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, 0, 'OPEN')
+            """,
+            (
+                clean_code,
+                course_id,
+                clean_semester,
+                clean_lecturer,
+                schedule_str,
+                clean_room,
+                max_capacity,
+            ),
+        )
+        conn.commit()
+        new_section_id = cursor.lastrowid
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        if should_close:
+            conn.close()
+
+    detail = get_section_detail(db, new_section_id)
+    assert detail is not None
+    return detail
+
+
+def update_section_capacity(
+    db: Any, section_id: int, new_capacity: int
+) -> dict[str, Any]:
+    """
+    Điều chỉnh sĩ số tối đa của lớp học phần.
+    Chặn cập nhật nếu new_capacity nhỏ hơn số sinh viên đã đăng ký (enrolled_count).
+    """
+    if new_capacity <= 0:
+        raise ValueError("Sĩ số tối đa mới phải lớn hơn 0.")
+
+    conn, should_close = _get_conn(db)
+    try:
+        row = conn.execute(
+            "SELECT id, enrolled_count FROM class_sections WHERE id = ?",
+            (section_id,),
+        ).fetchone()
+
+        if row is None:
+            raise ValueError(f"Không tìm thấy lớp học phần với section_id={section_id}.")
+
+        enrolled_count = int(row["enrolled_count"])
+        if new_capacity < enrolled_count:
+            raise ValueError(
+                f"Không thể giảm sĩ số tối đa ({new_capacity}) thấp hơn số sinh viên đã đăng ký ({enrolled_count})."
+            )
+
+        conn.execute(
+            "UPDATE class_sections SET max_capacity = ? WHERE id = ?",
+            (new_capacity, section_id),
+        )
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        if should_close:
+            conn.close()
+
+    detail = get_section_detail(db, section_id)
+    assert detail is not None
+    return detail
