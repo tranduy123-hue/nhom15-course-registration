@@ -9,7 +9,7 @@
 
 ---
 
-## 📌 1. Giới Thiệu Dự Án
+## 1. Giới Thiệu Dự Án
 
 Dự án **Hệ Thống Quản Lý Và Đăng Ký Môn Học (CRMS)** được thực hiện trong khuôn khổ học phần **Công nghệ phần mềm (Software Engineering) - Suất 2** dưới sự hướng dẫn của **Thầy Long Tran**.
 
@@ -20,7 +20,7 @@ Hệ thống giải quyết bài toán cốt lõi của đào tạo theo học c
 
 ---
 
-## 👥 2. Danh Sách Thành Viên & Bảng Phân Công Nhiệm Vụ
+## 2. Danh Sách Thành Viên & Bảng Phân Công Nhiệm Vụ
 
 | STT | Họ và Tên | Vai trò | GitHub Username | Jira Account ID | Phân công chính |
 |:---:|:---|:---:|:---|:---|:---|
@@ -31,7 +31,7 @@ Hệ thống giải quyết bài toán cốt lõi của đào tạo theo học c
 
 ---
 
-## 📋 3. Quản Lý Dự Án Theo Scrum (Jira Space `DKMH`)
+## 3. Quản Lý Dự Án Theo Scrum (Jira Space `DKMH`)
 
 - **Jira Project URL:** [https://duygk45.atlassian.net/browse/DKMH](https://duygk45.atlassian.net/browse/DKMH)
 - **Jira Board URL:** [https://duygk45.atlassian.net/jira/software/projects/DKMH/boards](https://duygk45.atlassian.net/jira/software/projects/DKMH/boards)
@@ -54,7 +54,7 @@ Hệ thống giải quyết bài toán cốt lõi của đào tạo theo học c
 
 ---
 
-## 🏗️ 4. Cấu Trúc Dự Án (Project Layout)
+## 4. Cấu Trúc Dự Án (Project Layout)
 
 ```
 nhom15-course-registration/
@@ -97,7 +97,7 @@ nhom15-course-registration/
 
 ---
 
-## 🚀 5. Hướng Dẫn Cài Đặt & Chạy Thử Nghiệm Local
+## 5. Hướng Dẫn Cài Đặt & Chạy Thử Nghiệm Local
 
 ### Yêu cầu hệ thống:
 - Python 3.10 trở lên.
@@ -139,7 +139,7 @@ nhom15-course-registration/
 
 ---
 
-## 🔄 6. Quy Trình Gitflow & Commit Convention
+## 6. Quy Trình Gitflow & Commit Convention
 
 - **Nhánh chính (`main`):** Chứa mã nguồn ổn định, luôn vượt qua kiểm thử CI.
 - **Nhánh tính năng (`feature/`):** Mỗi thành viên tạo nhánh riêng tương ứng với mã task Jira:
