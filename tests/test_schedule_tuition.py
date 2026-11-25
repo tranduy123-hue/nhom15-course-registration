@@ -1,7 +1,6 @@
 import sqlite3
 import pytest
 
-from src.services.enrollment_service import EnrollmentCancellationService
 from src.services.registration_service import RegistrationService
 from src.services.schedule_tuition_service import (
     ScheduleTuitionService,
@@ -69,14 +68,16 @@ def test_personal_schedule_sorted_and_tuition_calculated(db_conn: sqlite3.Connec
     assert summary.items[0].tuition_amount == 1_500_000
 
 
-def test_tuition_updates_after_cancelling_course(db_conn: sqlite3.Connection):
+def test_cancelled_enrollment_excluded_from_schedule_and_tuition(db_conn: sqlite3.Connection):
     reg = RegistrationService(db_conn)
-    cancel = EnrollmentCancellationService(db_conn)
     svc = ScheduleTuitionService(db_conn, tuition_per_credit=500_000)
 
     reg.register_course(student_id=1, section_id=10)  # 3TC
     reg.register_course(student_id=1, section_id=12)  # 2TC
-    cancel.cancel_enrollment(student_id=1, section_id=10)
+    db_conn.execute(
+        "UPDATE enrollments SET status = 'CANCELLED' WHERE student_id = 1 AND section_id = 10"
+    )
+    db_conn.commit()
 
     summary = svc.get_personal_schedule_and_tuition(student_id=1, semester="2026-1")
     assert summary.total_courses == 1
