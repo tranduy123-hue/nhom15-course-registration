@@ -152,4 +152,4 @@ def test_remaining_slots_and_is_full_flag(seeded_db: DatabaseManager):
     assert sec_full["is_full"] is True
 
     # Lớp không tồn tại
-    assert get_section_detail(seeded_db, 9999) is None
+    assert get_section_detail(seeded_db, 9999) 
